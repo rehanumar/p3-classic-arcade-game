@@ -1,35 +1,111 @@
+// global tile width and height variables used in game for further calculations.
+var TILEHEIGHT = 70, TILEWIDTH = 100;
+
 // Enemies our player must avoid
-var Enemy = function() {
+var Enemy = function(y) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
+    this.y = y;
+    this.x = 0;
+    this.random = Math.floor(Math.random() * 3) + 1;
     this.sprite = 'images/enemy-bug.png';
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
+  this.x = Math.round(this.x + (this.random + 1 * dt));
+  if(this.x > 600) {
+    this.x = 0;
+    this.random = Math.floor(Math.random() * 3) + 1;
+  }
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+var Player = function() {
+  this.life = 3;
+  this.score = 0;
+
+  // starting positions of the player. When we draw the game first time,
+  // these values are used for the first frame.
+  this.x = 200;
+  this.y = 350;
+  this.sprite = 'images/char-boy.png';
+};
+
+Player.prototype.update = function() {
+  // not need right now;
+};
+
+Player.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+Player.prototype.handleInput = function(keyCode) {
+  if(keyCode === 'up' && this.y > 0) {
+    this.y = this.y - TILEHEIGHT;
+  }
+  if(keyCode === 'down' && this.y < 400) {
+    this.y = this.y + TILEHEIGHT;
+  }
+  if(keyCode === 'right' && this.x < 400) {
+    this.x = this.x + TILEWIDTH;
+  }
+  if(keyCode === 'left' && this.x > 0) {
+    this.x = this.x - TILEWIDTH;
+  }
+};
+
+var Gem = function () {
+  this.y = 70;
+  this.x = TILEWIDTH * Math.floor(Math.random() * 5);
+  this.upgrade = 0;
+  this.gems = ['Gem Blue', 'Gem Green','Gem Orange', 'Star'];
+  this.sprite = 'images/'+this.gems[this.upgrade]+'.png';
+};
+
+Gem.prototype.update = function () {
+  if(player.score === 5 || player.score === 10 || player.score === 15) {
+    gem.upgrade++;
+  }
+  this.sprite = 'images/'+this.gems[this.upgrade]+'.png';
+  this.x = TILEWIDTH * Math.floor(Math.random() * 5);
+};
+
+Gem.prototype.render = function () {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// heart object for increaseing life
+var Heart = function () {
+  this.y = 70;
+  this.x = TILEWIDTH * Math.floor(Math.random() * 5);
+  this.sprite = 'images/Heart.png';
+};
+
+Heart.prototype.update = function () {
+  this.x = TILEWIDTH * Math.floor(Math.random() * 5);
+};
+
+Heart.prototype.render = function () {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
 
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-
+// Now instantiating the objects.
+// Placing all enemy objects in an array called allEnemies
+// Placing the player object in a variable called player
+var player = new Player();
+var allEnemies = [new Enemy(70), new Enemy(140), new Enemy(210)];
+var gem = new Gem();
+var heart = new Heart();
 
 
 // This listens for key presses and sends the keys to your

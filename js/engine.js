@@ -23,7 +23,7 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime, requestAnimationFrameID;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -56,7 +56,7 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+        requestAnimationFrameID = win.requestAnimationFrame(main);
     }
 
     /* This function does some initial setup that should only occur once,
@@ -80,8 +80,32 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
+
+    function checkCollisions() {
+       function between(x, min, max) {
+          return x >= min && x <= max;
+        }
+       allEnemies.forEach(function(enemy) {
+           if(between(player.x, (enemy.x - 60), (enemy.x + 60)) && between(player.y, (enemy.y - 10), (enemy.y + 10))) {
+             player.life--;
+             init();
+           }
+       });
+       if(between(player.x, (gem.x - 60), (gem.x + 60)) && between(player.y, (gem.y - 10), (gem.y + 10))) {
+         player.score++;
+        //  player.renderText();
+         gem.update();
+         init();
+       }
+       if(between(player.x, (heart.x - 60), (heart.x + 60)) && between(player.y, (heart.y - 10), (heart.y + 10))) {
+         player.life++;
+        //  player.renderText();
+         heart.update()
+         reset();
+       }
+     }
 
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
@@ -144,6 +168,10 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
+        gem.render();
+        if((player.score % player.life) % 2 && player.score > player.life) {
+          heart.render();
+        }
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
@@ -159,7 +187,13 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+      player.x = 200;
+      player.y = 350;
+      allEnemies.forEach(function(enemy) {
+          enemy.x = 0;
+      });
+      // win.cancelAnimationFrame(requestAnimationFrameID);
+      // requestAnimationFrameID = win.requestAnimationFrame(main);
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -171,7 +205,12 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
+        'images/Star.png',
+        'images/Heart.png'
     ]);
     Resources.onReady(init);
 
