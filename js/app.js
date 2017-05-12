@@ -44,6 +44,18 @@ Player.prototype.update = function() {
   // not need right now;
 };
 
+Player.prototype.renderText = function () {
+  ctx.fillStyle = '#DDD';
+  ctx.fillRect(0, 0, 510, 50);
+  ctx.font = "48px serif";
+  ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'black';
+  ctx.fillText("Score: " + this.score, 0, 40, 150);
+  ctx.strokeText("Score: " + this.score, 0, 40, 150);
+  ctx.fillText("life: " + this.life, 350, 40);
+  ctx.strokeText("life: " + this.life, 350, 40);
+}
+
 Player.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
@@ -115,7 +127,11 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        65: 'left',
+        87: 'up',
+        68: 'right',
+        83: 'down'
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
