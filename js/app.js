@@ -54,7 +54,7 @@ Player.prototype.renderText = function () {
   ctx.strokeText("Score: " + this.score, 0, 40, 150);
   ctx.fillText("life: " + this.life, 350, 40);
   ctx.strokeText("life: " + this.life, 350, 40);
-}
+};
 
 Player.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -98,7 +98,6 @@ Gem.prototype.render = function () {
 // heart object for increaseing life
 var Heart = function () {
   this.y = 70;
-  this.x = TILEWIDTH * Math.floor(Math.random() * 5);
   this.sprite = 'images/Heart.png';
 };
 

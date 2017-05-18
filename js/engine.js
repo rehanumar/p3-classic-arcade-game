@@ -84,6 +84,7 @@ var Engine = (function(global) {
     }
 
     function checkCollisions() {
+      var heartCollision, heartVisiblity;
        function between(x, min, max) {
           return x >= min && x <= max;
         }
@@ -95,14 +96,14 @@ var Engine = (function(global) {
        });
        if(between(player.x, (gem.x - 60), (gem.x + 60)) && between(player.y, (gem.y - 10), (gem.y + 10))) {
          player.score++;
-        //  player.renderText();
          gem.update();
          init();
        }
-       if(between(player.x, (heart.x - 60), (heart.x + 60)) && between(player.y, (heart.y - 10), (heart.y + 10))) {
+       heartCollision = between(player.x, (heart.x - 60), (heart.x + 60)) && between(player.y, (heart.y - 10), (heart.y + 10));
+       heartVisiblity = (player.score % player.life) % 2 && player.score > player.life;
+       if(heartCollision || heartVisiblity) {
          player.life++;
-        //  player.renderText();
-         heart.update()
+         heart.update();
          reset();
        }
      }
@@ -169,9 +170,7 @@ var Engine = (function(global) {
      */
     function renderEntities() {
         gem.render();
-        if((player.score % player.life) % 2 && player.score > player.life) {
-          heart.render();
-        }
+        heart.render();
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
