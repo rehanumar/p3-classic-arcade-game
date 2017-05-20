@@ -99,11 +99,9 @@ var Engine = (function(global) {
          gem.update();
          init();
        }
-       heartCollision = between(player.x, (heart.x - 60), (heart.x + 60)) && between(player.y, (heart.y - 10), (heart.y + 10));
-       heartVisiblity = (player.score % player.life) % 2 && player.score > player.life;
-       if(heartCollision || heartVisiblity) {
+       if(between(player.x, (heart.x - 60), (heart.x + 60)) && between(player.y, (heart.y - 10), (heart.y + 10))) {
          player.life++;
-         heart.update();
+         heart.notVisible = true;
          reset();
        }
      }
@@ -120,6 +118,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        heart.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -188,6 +187,7 @@ var Engine = (function(global) {
     function reset() {
       player.x = 200;
       player.y = 350;
+      heart.x = -100;
       allEnemies.forEach(function(enemy) {
           enemy.x = 0;
       });

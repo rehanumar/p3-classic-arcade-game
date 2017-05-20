@@ -98,11 +98,15 @@ Gem.prototype.render = function () {
 // heart object for increaseing life
 var Heart = function () {
   this.y = 70;
+  this.notVisible = true;
   this.sprite = 'images/Heart.png';
 };
 
 Heart.prototype.update = function () {
-  this.x = TILEWIDTH * Math.floor(Math.random() * 5);
+  if(this.notVisible && (player.score % player.life) % 2 && (player.score > player.life)) {
+    this.notVisible = false;
+    this.x = TILEWIDTH * Math.floor(Math.random() * 5);
+  }
 };
 
 Heart.prototype.render = function () {
