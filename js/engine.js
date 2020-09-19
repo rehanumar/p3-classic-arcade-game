@@ -14,19 +14,40 @@
  * a little simpler to work with.
  */
 
-var Engine = (function(global) {
+var app = app || {};
+
+function between(x, min, max) {
+    return x >= min && x <= max;
+}
+
+(function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
+    app.GAME_CONFIG = {
+        CANVAS_WIDTH: 505,
+        CANVAS_HEIGHT: 606,
+        TILE_HEIGHT: 70,
+        TILE_WIDTH: 100
+    }
+    app.ACTORS = {
+        player: new app.Player(),
+        allEnemies: [new app.Enemy(70), new app.Enemy(140), new app.Enemy(210)],
+        gem: new app.Gem(),
+        heart: new app.Heart()
+    }
+
     var doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime, requestAnimationFrameID;
+    
+    app.ctx = ctx;
 
-    canvas.width = 505;
-    canvas.height = 606;
+    canvas.width = app.GAME_CONFIG.CANVAS_WIDTH;
+    canvas.height = app.GAME_CONFIG.CANVAS_HEIGHT;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -40,7 +61,7 @@ var Engine = (function(global) {
          * computer is) - hurray time!
          */
         var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
+            dt = (now - lastTime) / 1000;
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
@@ -84,26 +105,27 @@ var Engine = (function(global) {
     }
 
     function checkCollisions() {
-      var heartCollision, heartVisiblity;
-       function between(x, min, max) {
-          return x >= min && x <= max;
+        var allEnemies = app.ACTORS.allEnemies,
+        player = app.ACTORS.player,
+        heart = app.ACTORS.heart,
+        gem = app.ACTORS.gem;
+
+        allEnemies.forEach(function(enemy) {
+            if(between(player.x, (enemy.x - 60), (enemy.x + 60)) && between(player.y, (enemy.y - 10), (enemy.y + 10))) {
+                player.life--;
+                init();
+            }
+        });
+        if(between(player.x, (gem.x - 60), (gem.x + 60)) && between(player.y, (gem.y - 10), (gem.y + 10))) {
+            player.score++;
+            gem.update();
+            init();
         }
-       allEnemies.forEach(function(enemy) {
-           if(between(player.x, (enemy.x - 60), (enemy.x + 60)) && between(player.y, (enemy.y - 10), (enemy.y + 10))) {
-             player.life--;
-             init();
-           }
-       });
-       if(between(player.x, (gem.x - 60), (gem.x + 60)) && between(player.y, (gem.y - 10), (gem.y + 10))) {
-         player.score++;
-         gem.update();
-         init();
-       }
-       if(between(player.x, (heart.x - 60), (heart.x + 60)) && between(player.y, (heart.y - 10), (heart.y + 10))) {
-         player.life++;
-         heart.notVisible = true;
-         reset();
-       }
+        if(between(player.x, (heart.x - 60), (heart.x + 60)) && between(player.y, (heart.y - 10), (heart.y + 10))) {
+            player.life++;
+            heart.notVisible = true;
+            reset();
+        }
      }
 
     /* This is called by the update function and loops through all of the
@@ -114,10 +136,12 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
+        var allEnemies = app.ACTORS.allEnemies,
+        heart = app.ACTORS.heart;
+
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
         heart.update();
     }
 
@@ -168,6 +192,11 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
+        var allEnemies = app.ACTORS.allEnemies,
+        player = app.ACTORS.player,
+        heart = app.ACTORS.heart,
+        gem = app.ACTORS.gem;
+
         gem.render();
         heart.render();
         /* Loop through all of the objects within the allEnemies array and call
@@ -185,14 +214,19 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-      player.x = 200;
-      player.y = 350;
-      heart.x = -100;
-      allEnemies.forEach(function(enemy) {
-          enemy.x = 0;
-      });
-      // win.cancelAnimationFrame(requestAnimationFrameID);
-      // requestAnimationFrameID = win.requestAnimationFrame(main);
+        var allEnemies = app.ACTORS.allEnemies,
+        player = app.ACTORS.player,
+        heart = app.ACTORS.heart,
+        gem = app.ACTORS.gem;
+
+        player.x = 200;
+        player.y = 350;
+        heart.x = -100;
+        allEnemies.forEach(function(enemy) {
+            enemy.newWave();
+        });
+        win.cancelAnimationFrame(requestAnimationFrameID);
+        // requestAnimationFrameID = win.requestAnimationFrame(main);
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -212,10 +246,4 @@ var Engine = (function(global) {
         'images/Heart.png'
     ]);
     Resources.onReady(init);
-
-    /* Assign the canvas' context object to the global variable (the window
-     * object when run in a browser) so that developers can use it more easily
-     * from within their app.js files.
-     */
-    global.ctx = ctx;
 })(this);

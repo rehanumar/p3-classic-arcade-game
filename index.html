@@ -8,10 +8,23 @@
 </head>
 <body>
     <h1>Controls</h1>
-    <p> Use up, down, left, right keys or safari mobile users can
-      alternatively use w, a, s, d keys to move the player.</p>
+    <p>
+      Use up, down, left, right keys or safari mobile users can
+      alternatively use w, a, s, d keys to move the player.
+    </p>
     <input type="text" id="keyboard">
-    <a class="keyboard-link" href="#" onclick="document.getElementById('keyboard').focus();">click here to get keyboard (if you are from mobile devices)</a>
+    <a class="keyboard-link" href="#" onclick="document.getElementById('keyboard').focus();">
+      click here to get keyboard (if you are from mobile devices)
+    </a>
+    <script>
+      var keyboardElm = document.getElementsByClassName("keyboard-link")[0];
+      window.addEventListener("resize", showKeyboard);
+      function showKeyboard() {
+        if (window.innerWidth < 700) {
+          keyboardElm.setAttribute("style", "display: block;")
+        }
+      }
+    </script>
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>

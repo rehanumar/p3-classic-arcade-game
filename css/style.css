@@ -1,6 +1,10 @@
 body {
-    text-align: center;
-    background: #DDD;
+  text-align: center;
+  background: #DDD;
+}
+
+h1, p {
+  margin: 5px;
 }
 
 #keyboard {
@@ -8,5 +12,5 @@ body {
 }
 
 .keyboard-link {
-  display: block;
+  display: none;
 }
